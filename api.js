@@ -29,6 +29,16 @@ router.route('/orders').post((request,response)=>{
 
 })
 
+
+//get biggest number
+router.route('/orderNumberBiggest').get((request,response)=>{
+
+    dboperations.getBiggestOrderNumber().then(result => {
+       response.status(200).json(result[0]);
+    })
+
+})
+
 //add inventory
 router.route('/inventory').post((request,response)=>{
    

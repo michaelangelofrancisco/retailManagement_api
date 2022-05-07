@@ -24,6 +24,21 @@ async function addOrder(order) {
 }
 
 //add new product to the Inventory
+async function getBiggestOrderNumber() {
+
+    try {
+        let pool = await sql.connect(config);
+        let biggest = await pool.request()
+            .query('SELECT MAX(OrderNumber) AS max_order_number FROM Dashboard');
+        return biggest.recordset;
+    }
+    catch (err) {
+        console.log(err);
+    }
+
+}
+
+//add new product to the Inventory
 async function addInventory(inventoryData) {
 
     try {
@@ -58,6 +73,7 @@ async function getInformationInventory() {
 module.exports = {
     addOrder : addOrder,
     addInventory : addInventory,
-    getInformationInventory : getInformationInventory
+    getInformationInventory : getInformationInventory,
+    getBiggestOrderNumber: getBiggestOrderNumber
 }
 
