@@ -1,5 +1,4 @@
 var Db  = require('./dboperations');
-var Order = require('./order');
 const dboperations = require('./dboperations');
 
 var express = require('express');
@@ -19,38 +18,41 @@ router.use((request,response,next)=>{
    next();
 })
 
-router.route('/orders').get((request,response)=>{
-
-    dboperations.getOrders().then(result => {
-       response.json(result[0]);
-    })
-
-})
-
-router.route('/orders/:id').get((request,response)=>{
-
-    dboperations.getOrder(request.params.id).then(result => {
-       response.json(result[0]);
-    })
-
-})
-
+//add order
 router.route('/orders').post((request,response)=>{
-
-    let order = {...request.body}
+   
+   let order = {...request.body};
 
     dboperations.addOrder(order).then(result => {
-       response.status(201).json(result);
+       response.status(200).json(result);
     })
 
 })
 
+//add inventory
+router.route('/inventory').post((request,response)=>{
+   
+   let inventoryData = {...request.body};
 
+    dboperations.addInventory(inventoryData).then(result => {
+       response.status(200).json(result);
+    })
+
+})
+
+//Table filler
+router.route('/getInformationInventory').get((request,response)=>{
+
+    dboperations.getInformationInventory().then(result => {
+       response.json(result[0]);
+    })
+
+})
 
 
 var port = process.env.PORT || 8090;
 app.listen(port);
-console.log('Order API is runnning at ' + port);
+console.log('Retail management API is runnning at ' + port);
 
 
 

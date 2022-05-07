@@ -1,45 +1,21 @@
 var config = require('./dbconfig');
 const sql = require('mssql');
 
-
-async function getOrders() {
-    try {
-        let pool = await sql.connect(config);
-        let products = await pool.request().query("SELECT * from Orders");
-        return products.recordsets;
-    }
-    catch (error) {
-        console.log(error);
-    }
-}
-
-async function getOrder(orderId) {
-    try {
-        let pool = await sql.connect(config);
-        let product = await pool.request()
-            .input('input_parameter', sql.Int, orderId)
-            .query("SELECT * from Orders where Id = @input_parameter");
-        return product.recordsets;
-
-    }
-    catch (error) {
-        console.log(error);
-    }
-}
-
-
+//add order to the dashboard
 async function addOrder(order) {
 
     try {
         let pool = await sql.connect(config);
-        let insertProduct = await pool.request()
-            .input('Id', sql.Int, order.Id)
-            .input('Title', sql.NVarChar, order.Title)
-            .input('Quantity', sql.Int, order.Quantity)
-            .input('Message', sql.NVarChar, order.Message)
-            .input('City', sql.NVarChar, order.City)
-            .execute('InsertOrders');
-        return insertProduct.recordsets;
+        let addingOrder = await pool.request()
+            .input('productName', sql.VarChar, order.productName)
+            .input('price', sql.Decimal, order.price)
+            .input('size', sql.VarChar, order.size)
+            .input('quantity', sql.Int, order.quantity)
+            .input('payment', sql.Decimal, order.payment)
+            .input('date', sql.DateTime, order.date)
+            .input('staff', sql.NVarChar, order.staff)
+            .query('INSERT INTO Dashboard (productName, price, size, quantity, payment, date, staff) VALUES (@productName, @price, @size, @quantity, @payment, @date, @staff);');
+        return addingOrder.recordsets;
     }
     catch (err) {
         console.log(err);
@@ -47,13 +23,41 @@ async function addOrder(order) {
 
 }
 
+//add new product to the Inventory
+async function addInventory(inventoryData) {
 
+    try {
+        let pool = await sql.connect(config);
+        let addingInventory = await pool.request()
+            .input('productInvName', sql.VarChar, inventoryData.productInvName)
+            .input('productInvPrice', sql.Decimal, inventoryData.productInvPrice)
+            .input('productInvSize', sql.VarChar, inventoryData.productInvSize)
+            .input('productInvQuantity', sql.Int, inventoryData.productInvQuantity)
+            .input('productInvDate', sql.Date, inventoryData.productInvDate)
+            .query('INSERT INTO Inventory (productInvName, productInvPrice, productInvSize, productInvQty, productInvDate) VALUES (@productInvName, @productInvPrice, @productInvSize, @productInvQuantity, @productInvDate);');
+        return addingInventory.recordsets;
+    }
+    catch (err) {
+        console.log(err);
+    }
 
+}
 
-
+//getting Information from Database "Inventory"
+async function getInformationInventory() {
+    try {
+        let pool = await sql.connect(config);
+        let products = await pool.request().query("SELECT * from Inventory");
+        return products.recordsets;
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
 
 module.exports = {
-    getOrders: getOrders,
-    getOrder : getOrder,
-    addOrder : addOrder
+    addOrder : addOrder,
+    addInventory : addInventory,
+    getInformationInventory : getInformationInventory
 }
+
