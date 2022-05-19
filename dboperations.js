@@ -111,6 +111,21 @@ async function getDetailsOfCustomer(orderNumber) {
     }
 }
 
+//Check product if existing
+async function getDetailsofProduct(var1, var2) {
+    try {
+        let pool = await sql.connect(config);
+        let products = await pool.request()      
+        .input('productInvName', sql.VarChar, var1)
+        .input('productInvSize', sql.VarChar, var2)
+        .query("SELECT productInvName, productInvSize, productInvQty FROM Inventory WHERE productInvName = @productInvName AND productInvSize = @productInvSize");
+        return products.recordsets;
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
 module.exports = {
     addOrder : addOrder,
     addInventory : addInventory,
@@ -118,6 +133,7 @@ module.exports = {
     getBiggestOrderNumber: getBiggestOrderNumber,
     getSalesInformation: getSalesInformation,
     getOrderNumberInformation: getOrderNumberInformation,
-    getDetailsOfCustomer:getDetailsOfCustomer
+    getDetailsOfCustomer:getDetailsOfCustomer,
+    getDetailsofProduct:getDetailsofProduct
 }
 

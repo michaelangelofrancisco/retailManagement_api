@@ -86,6 +86,15 @@ router.route('/getCustomerDetailsForOrderNumber/:orderNumber').get((request,resp
 
 })
 
+//Table Filler checking product availability
+router.route('/getDetailsForProduct/:var1/:var2').get((request,response)=>{
+
+    dboperations.getDetailsofProduct(request.params.var1, request.params.var2).then(result => {
+      response.json(result[0]);
+    })
+
+})
+
 var port = process.env.PORT || 8090;
 app.listen(port);
 console.log('Retail management API is runnning at ' + port);
