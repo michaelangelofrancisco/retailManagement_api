@@ -50,7 +50,7 @@ router.route('/inventory').post((request,response)=>{
 
 })
 
-//Table filler
+//Table filler Inventory
 router.route('/getInformationInventory').get((request,response)=>{
 
     dboperations.getInformationInventory().then(result => {
@@ -59,6 +59,32 @@ router.route('/getInformationInventory').get((request,response)=>{
 
 })
 
+//Table Filler Sales
+router.route('/getInformationSales').get((request,response)=>{
+
+    dboperations.getSalesInformation().then(result => {
+      response.json(result[0]);
+    })
+
+})
+
+//Table Filler Sales Ordernumber Data's
+router.route('/getInformationForOrderNumber/:orderNumber').get((request,response)=>{
+
+    dboperations.getOrderNumberInformation(request.params.orderNumber).then(result => {
+      response.json(result[0]);
+    })
+
+})
+
+//Table Filler Sales Customer Details of every Ordernumber Data's
+router.route('/getCustomerDetailsForOrderNumber/:orderNumber').get((request,response)=>{
+
+    dboperations.getDetailsOfCustomer(request.params.orderNumber).then(result => {
+      response.json(result[0]);
+    })
+
+})
 
 var port = process.env.PORT || 8090;
 app.listen(port);

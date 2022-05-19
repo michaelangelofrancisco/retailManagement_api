@@ -7,6 +7,7 @@ async function addOrder(order) {
     try {
         let pool = await sql.connect(config);
         let addingOrder = await pool.request()
+            .input('orderNumber', sql.VarChar, order.orderNumber)
             .input('productName', sql.VarChar, order.productName)
             .input('price', sql.Decimal, order.price)
             .input('size', sql.VarChar, order.size)
@@ -14,7 +15,7 @@ async function addOrder(order) {
             .input('payment', sql.Decimal, order.payment)
             .input('date', sql.DateTime, order.date)
             .input('staff', sql.NVarChar, order.staff)
-            .query('INSERT INTO Dashboard (productName, price, size, quantity, payment, date, staff) VALUES (@productName, @price, @size, @quantity, @payment, @date, @staff);');
+            .query('INSERT INTO Dashboard (OrderNumber, productName, price, size, quantity, payment, date, staff) VALUES (@orderNumber, @productName, @price, @size, @quantity, @payment, @date, @staff);');
         return addingOrder.recordsets;
     }
     catch (err) {
@@ -70,10 +71,53 @@ async function getInformationInventory() {
     }
 }
 
+//getting Information from Database for "Sales Table"
+async function getSalesInformation() {
+    try {
+        let pool = await sql.connect(config);
+        let products = await pool.request().query("SELECT OrderNumber, date, staff FROM Dashboard GROUP BY OrderNumber, date, staff ");
+        return products.recordsets;
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+//getting Information from Database for "Order Number Individual"
+async function getOrderNumberInformation(orderNumber) {
+    try {
+        let pool = await sql.connect(config);
+        let products = await pool.request()      
+        .input('orderNumber', sql.Int, orderNumber)
+        .query("SELECT productName, price, size, quantity, status, date, staff FROM Dashboard WHERE OrderNumber = @orderNumber;");
+        return products.recordsets;
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+//getting customer details from Database for "Order Number Individual" Sales
+async function getDetailsOfCustomer(orderNumber) {
+    try {
+        let pool = await sql.connect(config);
+        let products = await pool.request()      
+        .input('orderNumber', sql.Int, orderNumber)
+        .query("SELECT DISTINCT OrderNumber, firstname, lastname, address, number, payment, price FROM Dashboard WHERE OrderNumber = @orderNumber;");
+        return products.recordsets;
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
 module.exports = {
     addOrder : addOrder,
     addInventory : addInventory,
     getInformationInventory : getInformationInventory,
-    getBiggestOrderNumber: getBiggestOrderNumber
+    getBiggestOrderNumber: getBiggestOrderNumber,
+    getSalesInformation: getSalesInformation,
+    getOrderNumberInformation: getOrderNumberInformation,
+    getDetailsOfCustomer:getDetailsOfCustomer
 }
 
